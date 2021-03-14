@@ -1,0 +1,12 @@
+version: '2'
+
+services:
+  rsyslog:
+    image: 'rsyslog/syslog_appliance_alpine'
+    restart: always
+    environment:
+      - RSYSLOG_CONF=/config/my_rsyslog.conf
+    volumes:
+      - ./config:/config
+      - ./logs:/logs
+      - ./work:/work
