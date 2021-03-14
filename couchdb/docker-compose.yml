@@ -1,0 +1,14 @@
+version: '2'
+services:
+  couch:
+    image: couchdb:latest
+    volumes:
+     - ./config:/opt/couchdb/etc/local.d/
+     - ./data:/opt/couchdb/data
+     - /var/log/couchdb.log:/opt/couchdb/log/couch.log
+    restart: always
+    environment:
+     - COUCHDB_USER 
+     - COUCHDB_PASSWORD
+    ports:
+     - 5984:5984 
