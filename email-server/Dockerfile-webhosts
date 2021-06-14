@@ -1,0 +1,20 @@
+#+++++++++++++++++++++++++++++++++++++++
+# Dockerfile for webdevops/postfix:latest
+#    -- automatically generated  --
+#+++++++++++++++++++++++++++++++++++++++
+
+FROM webdevops/base-app:ubuntu-18.04
+
+COPY conf/ /opt/docker/
+
+RUN set -x \
+    && docker-service enable syslog \
+    && docker-service enable postfix \
+    && docker-run-bootstrap \
+    && docker-image-cleanup
+
+EXPOSE 25 465 587
+
+
+RUN apt-get update && apt-get upgrade && apt-get -y install build-essential git \
+	python python3 python-pip python3-pip

@@ -1,0 +1,88 @@
+version: '3.3'
+
+services:
+   db:
+     image: postgres:alpine
+     ports:
+       - "5433:5432"
+     volumes:
+       - db_data:/var/lib/postgresql
+       - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+       - ./data:/var/lib/postgresql/data
+       - ./container:/etc/postgresql
+     restart: always
+     command: [
+         #'-c config_file=/etc/postgresql/postgresql.conf',
+         #'--character-set-server=utf8mb4', # change
+         #'--collation-server=utf8mb4_unicode_ci' #change
+     ]
+     environment:
+       - POSTGRES_USER=root
+       - POSTGRES_PASSWORD=root
+       - POSTGRES_DB=postgres
+
+   pgadmin:
+     depends_on:
+       - db
+     image: dpage/pgadmin4
+     ports:
+       - 4012:80
+     environment:
+       PGADMIN_DEFAULT_EMAIL: user@blue.com
+       PGADMIN_DEFAULT_PASSWORD: password
+
+   postgrest:
+     depends_on:
+       - db
+     links:
+       - db:db
+     image: postgrest/postgrest
+     ports:
+       - "3000:3000"
+     environment:
+       PGRST_DB_URI: postgres://root:root@db:5432/postgres
+       PGRST_DB_SCHEMA: pub
+       PGRST_DB_ANON_ROLE: postgres
+     restart: unless-stopped
+
+   adminer:
+     image: adminer
+     restart: always
+     ports:
+       - 4013:8080
+
+   mailhog:
+     image: mailhog/mailhog
+     ports:
+       - 1025:1025
+       - 8025:8025
+
+   swagger:
+     depends_on:
+       - postgrest
+     links:
+       - postgrest:postgrest
+     image: swaggerapi/swagger-ui
+     ports:
+       - "8080:8080"
+     expose:
+       - "8080"
+     environment:
+       API_URL: http://postgrest:3000/
+
+   goapp:
+     depends_on:
+       - db
+     build:
+       context: ./goapp
+       dockerfile: Dockerfile
+     environment:
+       READER_USER: reader
+       READER_PASSWORD: pass
+       WRITER_USER: writer
+       WRITER_PASSWORD: pass
+       READER_TOKEN: reader_token
+       WRITER_TOKEN: writer_token
+
+volumes:
+  db_data:

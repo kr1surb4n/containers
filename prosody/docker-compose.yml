@@ -1,0 +1,22 @@
+xmpp_server:
+  image: prosody/prosody
+  restart: unless-stopped
+  user: "${PROSODY_UID}:${PROSODY_GID}"
+  ports:
+    - 5222:5222
+    - 5269:5269
+    - 5347:5347
+    - 5280:5280
+    - 5281:5281
+  environment:
+    LOCAL: ${ADMIN}
+    PASSWORD: ${PASSWORD}
+    DOMAIN: ${DOMAIN}
+  volumes:
+    - './config:/etc/prosody'
+    - './data:/var/lib/prosody'
+    - './logs:/var/log/prosody'
+    - './files:/var/www'
+    - './modules/community:/usr/lib/prosody/modules-community'
+    - './modules/custom:/usr/lib/prosody/modules-custom'
+    - '/etc/letsencrypt:/etc/letsencrypt'

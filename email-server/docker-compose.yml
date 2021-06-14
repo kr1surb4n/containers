@@ -1,0 +1,12 @@
+version: '3.3'
+services:
+   mailman:
+     build:
+       context: .
+       dockerfile: Dockerfile
+     volumes:
+       - ./insides/etc:/etc
+       - ./insides/home:/home
+       - ./insides/opt:/opt
+       - ./insides/var:/var
+       - ./insides/tmp:/tmp
